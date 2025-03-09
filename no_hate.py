@@ -48,20 +48,20 @@ def search_ip(ip: str):
 def main():
     while True:
         Fore.RESET
-        print(cyan + "╔════════════════════════════════════╗")
-        print(cyan + "║               ФУНКЦИИ              ║")
-        print(cyan + "╠════════════════════════════════════╣")
-        print(cyan + "║         Пробив по номеру: 1        ║")
-        print(cyan + "║           Пробив по IP: 2          ║")
-        print(cyan + "║              Выход: 0              ║")
-        print(cyan + "╚════════════════════════════════════╝")
+        print(purple + "╔════════════════════════════════════╗")
+        print(purple + "║               ФУНКЦИИ              ║")
+        print(purple + "╠════════════════════════════════════╣")
+        print(purple + "║         Пробив по номеру: 1        ║")
+        print(purple + "║           Пробив по IP: 2          ║")
+        print(purple + "║              Выход: 0              ║")
+        print(purple + "╚════════════════════════════════════╝")
         
         print()
         select = input("[ENTER THE FUNCTION NUMBER]: ")
         
         if select == "1":
             phone = input(purple + "[ENTER THE PHONE]: ")
-            await search_phone(phone)
+            search_phone(phone)
         
         if select == "2":
             ip = input(purple + "[ENTER THE IP]: ")
