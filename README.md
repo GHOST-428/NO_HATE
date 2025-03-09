@@ -1,1 +1,1 @@
-# NO-HATE-Hack-Tool
+# NO HATE / HACK TOOL
