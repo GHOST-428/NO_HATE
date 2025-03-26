@@ -1,8 +1,12 @@
-from colorama import Fore, Back, Style
+import customtkinter
+from socket import gethostbyname
+from colorama import Fore, Style
 import fake_useragent
 import requests
 import random
 import string
+import random
+import whois
 import time
 import json
 import os
@@ -16,7 +20,7 @@ user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHT
 def printDelay(text):
     for char in text:
         print(char, end='', flush=True)
-        time.sleep(0.1)
+        time.sleep(0.2)
     print()
 
 banner = """
@@ -35,6 +39,8 @@ banner = """
               ║         Пробив по номеру: 1        ║
               ║           Пробив по IP: 2          ║
               ║        Спамер для telegram: 3      ║
+              ║        Узнать ip по домену: 4      ║
+              ╠════════════════════════════════════╣
               ║              Выход: 0              ║
               ╚════════════════════════════════════╝
 """
@@ -100,6 +106,15 @@ def spam_tg(phone: str):
             requests.post(url, headers=headers, data={'phone': phone})
             print(cyan + "Send to tg!")
             time.sleep(0.5)
+
+def get_ip(domen: str):
+    ip = gethostbyname(domen.split('/')[2]) if '/' in domen else gethostbyname(domen)
+    print(Fore.YELLOW + "\nDomen Info📰")
+    printDelay(f"IP: {ip}")
+            
+    print("")
+    input(purple + "[PRESS ENTER TO CONTINIE...]")
+    os.system("clear")
     
 def main():
     while True:
@@ -120,6 +135,10 @@ def main():
         if select == "3":
             phone = input(purple + "[ENTER THE PHONE]: ")
             spam_tg(phone)
+        
+        if select == "4":
+            domen = input(purple + "[ENTER THE DOMEN]: ")
+            get_ip(domen)
         
         if select == "0":
             break
