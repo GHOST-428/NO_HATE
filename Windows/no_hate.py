@@ -1,14 +1,14 @@
 import customtkinter
 from bs4 import BeautifulSoup
 from requests.auth import HTTPProxyAuth
-from flask import Flask, request
+from socket import gethostbyname
 import fake_useragent
 import threading
 import requests
 import random
 import string
 import random
-import socket
+import whois
 import time
 import json
 import os
@@ -38,6 +38,21 @@ def search_ip(ip: str):
         "Region": data.get('region', "Не найдено"),
         "City": data.get('city', "Не найдено"),
         "Org": data.get('org', "Не найдено"),
+    }
+    return base
+
+def info_site(domen: str):
+    ip = gethostbyname(domen.split('/')[2]) if '/' in domen else gethostbyname(domen)
+    
+    base = {
+        "IP": ip,
+        
+        #soon...
+        "date_reg": "?",
+        "date_end": "?",
+        "Org": "?",
+        "Country": "?",
+        "City": "?"
     }
     return base
 
@@ -113,6 +128,29 @@ def ip():
     
     ip.mainloop()
 
+def site():
+    app.destroy()
+    
+    site = customtkinter.CTk()
+    site.geometry("340x350")
+    site.title("NO HATE | TOOL")
+    
+    entry = customtkinter.CTkEntry(master=site, placeholder_text="example.com...")
+    entry.place(x=170, y=230, anchor=customtkinter.CENTER)
+    
+    textbox = customtkinter.CTkTextbox(master=site, width=350, corner_radius=0)
+    textbox.place(x=175, y=100, anchor=customtkinter.CENTER)
+    
+    def one():
+        textbox.delete(0.0, 'end')
+        info = info_site(entry.get())
+        textbox.insert(f"0.0", f'IP: {info["IP"]} \nRegistration Date: {info["date_reg"]} \nExpiration Date: {info["date_end"]} \nOrganization: {info["Org"]} \nCounty: {info["Country"]} \nCity: {info["City"]}')
+
+    button = customtkinter.CTkButton(master=site, text="Search", command=one)
+    button.place(x=170, y=260, anchor=customtkinter.CENTER)
+    
+    site.mainloop()
+
 def tg():
     app.destroy()
     
@@ -138,13 +176,16 @@ app = customtkinter.CTk()
 app.geometry("400x300")
 app.title("NO HATE | TOOL")
 
-button = customtkinter.CTkButton(master=app, text="Search Phone", command=phone)
+button = customtkinter.CTkButton(master=app, text="Search By Phone", command=phone)
 button.place(x=200, y=110, anchor=customtkinter.CENTER)
 
-button = customtkinter.CTkButton(master=app, text="Search IP", command=ip)
+button = customtkinter.CTkButton(master=app, text="Search By IP", command=ip)
 button.place(x=200, y=140, anchor=customtkinter.CENTER)
 
-button = customtkinter.CTkButton(master=app, text="Spam TG", command=tg)
+button = customtkinter.CTkButton(master=app, text="Info by Site", command=site)
 button.place(x=200, y=170, anchor=customtkinter.CENTER)
+
+button = customtkinter.CTkButton(master=app, text="Spam TG", command=tg)
+button.place(x=200, y=200, anchor=customtkinter.CENTER)
 
 app.mainloop()
