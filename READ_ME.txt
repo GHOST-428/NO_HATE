@@ -17,4 +17,11 @@
 ║             GitHub: https://github.com/GHOST-428/NO_HATE            ║
 ╠═════════════════════════════════════════════════════════════════════╣
 ║                           Version: 2.00                             ║
+╠═════════════════════════════════════════════════════════════════════╣
+║                             Libraries                               ║
+║                        pip install customtkinter                    ║
+║                       pip install BeautifulSoup4                    ║
+║                        pip install fake_useragent                   ║
+║                         pip install requests                        ║
+║                          pip install pillow                         ║
 ╚═════════════════════════════════════════════════════════════════════╝
