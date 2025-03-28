@@ -16,7 +16,7 @@
 ║               YouTube: www.youtube.com/@HikuraMykuami               ║
 ║             GitHub: https://github.com/GHOST-428/NO_HATE            ║
 ╠═════════════════════════════════════════════════════════════════════╣
-║                           Version: 2.00                             ║
+║                           Version: 2.31                             ║
 ╠═════════════════════════════════════════════════════════════════════╣
 ║                             Libraries                               ║
 ║                        pip install customtkinter                    ║
