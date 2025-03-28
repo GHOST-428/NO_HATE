@@ -20,9 +20,9 @@
 ╠═════════════════════════════════════════════════════════════════════╣
 ║                             Libraries                               ║
 ║                                                                     ║
-║                        pip install customtkinter                    ║
-║                       pip install BeautifulSoup4                    ║
-║                        pip install fake_useragent                   ║
-║                         pip install requests                        ║
-║                          pip install pillow                         ║
+║                      pip install customtkinter                      ║
+║                     pip install BeautifulSoup4                      ║
+║                      pip install fake_useragent                     ║
+║                        pip install requests                         ║
+║                         pip install pillow                          ║
 ╚═════════════════════════════════════════════════════════════════════╝
