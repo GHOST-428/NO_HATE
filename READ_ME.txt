@@ -19,6 +19,7 @@
 ║                           Version: 2.31                             ║
 ╠═════════════════════════════════════════════════════════════════════╣
 ║                             Libraries                               ║
+║                                                                     ║
 ║                        pip install customtkinter                    ║
 ║                       pip install BeautifulSoup4                    ║
 ║                        pip install fake_useragent                   ║
