@@ -9,7 +9,6 @@ import requests
 import random
 import string
 import random
-import whois
 import time
 import json
 import os
@@ -28,14 +27,14 @@ def printDelay(color, text):
     print()
 
 banner = f"""
-       ███▄    █  ▒█████      ██░ ██  ▄▄▄     ▄▄▄█████▓▓█████ 
-       ██ ▀█   █ ▒██▒  ██▒   ▓██░ ██▒▒████▄   ▓  ██▒ ▓▒▓█   ▀ 
-      ▓██  ▀█ ██▒▒██░  ██▒   ▒██▀▀██░▒██  ▀█▄ ▒ ▓██░ ▒░▒███   
-      ▓██▒  ▐▌██▒▒██   ██░   ░▓█ ░██ ░██▄▄▄▄██░ ▓██▓ ░ ▒▓█  ▄ 
+       ███▄    █  ▒█████      ██░ ██  ▄▄▄     ▄▄▄█████▓▓█████
+       ██ ▀█   █ ▒██▒  ██▒   ▓██░ ██▒▒████▄   ▓  ██▒ ▓▒▓█   ▀
+      ▓██  ▀█ ██▒▒██░  ██▒   ▒██▀▀██░▒██  ▀█▄ ▒ ▓██░ ▒░▒███
+      ▓██▒  ▐▌██▒▒██   ██░   ░▓█ ░██ ░██▄▄▄▄██░ ▓██▓ ░ ▒▓█  ▄
       ▒██░   ▓██░░ ████▓▒░   ░▓█▒░██▓ ▓█   ▓██▒ ▒██▒ ░ ░▒████▒
       ░ ▒░   ▒ ▒ ░ ▒░▒░▒░     ▒ ░░▒░▒ ▒▒   ▓▒█░ ▒ ░░   ░░ ▒░ ░
       ░ ░░   ░ ▒░  ░ ▒ ▒░     ▒ ░▒░ ░  ▒   ▒▒ ░   ░     ░ ░  ░
-         ░   ░ ░ ░ ░ ░ ▒      ░  ░░ ░  ░   ▒    ░         ░   
+         ░   ░ ░ ░ ░ ░ ▒      ░  ░░ ░  ░   ▒    ░         ░
               ░     ░ ░      ░  ░  ░      ░  ░           ░  ░
 """
 
@@ -55,34 +54,40 @@ funcbanner = """
 
 def search_phone(phone: str):
     url = f"https://fincalculator.ru/api/tel/{phone}"
+    mnp = f"https://xn----dtbofgvdd5ah.xn--p1ai/php/mnp.php?nomer={phone}"
     response = requests.get(url, headers={'User-Agent': user_agent})
+    mnp_rep = requests.get(mnp, headers={'User-Agent': user_agent})
     data = json.loads(response.text)
-    
+
+    oper = data["operator"] if data["operator"] != "" else "Не найдено"
+    if mnp_rep.text != "﻿no":
+        oper = oper + " был перенесён на " + mnp_rep.text
+
     base = {
         "Query": phone,
         "Country": data["country"] if data["country"] != "" else "Не найдено",
         "Region": data["region"] if data["region"] != "" else "Не найдено",
-        "Oper": data["operator"] if data["operator"] != "" else "Не найдено"
+        "Oper": oper
     }
 
     print(Fore.YELLOW + "\nPhone Info📞")
     printDelay(Fore.YELLOW, f"Страна: " + base["Country"])
     printDelay(Fore.YELLOW,  f"Регион: " + base["Region"])
     printDelay(Fore.YELLOW,  f"Оператор: " + base["Oper"])
-    
+
     global base_phone
     base_phone = base
-    
-    
+
+
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
     os.system("clear")
-        
+
 def search_ip(ip: str):
     url = f"https://ipinfo.io/{ip}/json"
     response = requests.get(url, headers={'User-Agent': user_agent})
     data = response.json()
-    
+
     base = {
         "Query": ip,
         "Country": data.get('country', "Не найдено"),
@@ -90,20 +95,20 @@ def search_ip(ip: str):
         "City": data.get('city', "Не найдено"),
         "Org": data.get('org', "Не найдено"),
     }
-    
+
     print(Fore.YELLOW + "\nIP Info🌐")
     printDelay(Fore.YELLOW, f"Страна: " + base["Country"])
     printDelay(Fore.YELLOW, f"Регион: " + base["Region"])
     printDelay(Fore.YELLOW, f"Город: " + base["City"])
     printDelay(Fore.YELLOW, f"Провайдер: " + base["Org"])
-        
+
     global base_ip
     base_ip = base
-    
+
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
     os.system("clear")
-    
+
 def spam_tg(phone: str):
     urls = [
         'https://translations.telegram.org/auth/request',
@@ -121,30 +126,33 @@ def spam_tg(phone: str):
         'https://oauth.telegram.org/auth/request?bot_id=5082101769&origin=https%3A%2F%2Fauth.smartbotpro.ru&request_access=write&lang=ru&return_to=https%3A%2F%2Fauth.smartbotpro.ru%2Fauth%2Flogin%2F',
         'https://oauth.telegram.org/auth/request?bot_id=366357143&origin=https%3A%2F%2Fwww.botobot.ru&embed=1&request_access=write&lang=ru&return_to=https%3A%2F%2Fwww.botobot.ru%2Fblog%2Fru%2Fvoiti-cherez-telegram-avtorizatsiia-na-saitie-botobot%2F'
     ]
-    
+
     while True:
         for url in urls:
             user = fake_useragent.UserAgent().random
             headers = {'user-agent': user}
-    
-            requests.post(url, headers=headers, data={'phone': phone})
-            print(Style.DIM + Fore.WHITE, "Send to tg!")
-            time.sleep(0.5)
+
+            try:
+                requests.post(url, headers=headers, data={'phone': phone})
+                print(Style.DIM + Fore.WHITE, f"[+]: Sended to {phone}, succesfull")
+            except:
+                print(Style.DIM + Fore.RED, f"[-]: Not sended to {phone}, error")
+            time.sleep(2)
 
 def get_ip(domen: str):
     ip = gethostbyname(domen.split('/')[2]) if '/' in domen else gethostbyname(domen)
-    
+
     base = {
         "Query": domen,
         "IP": ip
     }
-    
+
     print(Fore.YELLOW + "\nDomen Info📰")
     printDelay(Fore.YELLOW, f"IP: {ip}")
-    
+
     global base_site
     base_site = base
-            
+
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
     os.system("clear")
@@ -158,7 +166,7 @@ def report(phone, ip, site):
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <title>NO_HATE | Report</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        
+
         <svg style="display:none;">
             <symbol id="logo-icon" viewBox="0 0 24 24">
                 <path d="M12 0C8.27 0 5.14 2.55 4.25 6c-.07.3-.12.61-.15.93A9.08 9.08 0 0 0 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.3A7.902 7.902 0 0 1 12 20zm6.31-3.1L7.1 5.69A7.902 7.902 0 0 1 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/>
@@ -346,28 +354,28 @@ def report(phone, ip, site):
                 .container {
                     padding: 0 0.5rem;
                 }
-                
+
                 .leak-header {
                     flex-wrap: wrap;
                 }
-                
+
                 .data-grid {
                     grid-template-columns: 1fr;
                 }
-                
+
                 .corner-logo {
                     position: static;
                     justify-content: center;
                     margin-bottom: 1.5rem;
                 }
-                
+
                 .scroll-top {
                     right: 10px;
                     bottom: -60px;
                     width: 40px;
                     height: 40px;
                 }
-                
+
                 .scroll-top.visible {
                     bottom: 70px;
                 }
@@ -399,24 +407,24 @@ def report(phone, ip, site):
                         🌏Страна
                         </div>
                         <div style="word-break: break-word;">{base_phone["Country"]}</div>
-                        
+
                         <div style="color: var(--text-secondary); font-size: 0.875rem;">
                         🌲Регион
                         </div>
                         <div style="word-break: break-word;">{base_phone["Region"]}</div>
-                        
+
                         <div style="color: var(--text-secondary); font-size: 0.875rem;">
                         👤Оператор
                         </div>
                         <div style="word-break: break-word;">{base_phone["Oper"]}</div>
-                        
+
                         </div>
                 </div>
             </div>
             </div></div>"""
         except:
             pass
-        
+
     if ip:
         try:
             html += f"""
@@ -431,22 +439,22 @@ def report(phone, ip, site):
                         🌏Страна
                         </div>
                         <div style="word-break: break-word;">{base_ip["Country"]}</div>
-                        
+
                         <div style="color: var(--text-secondary); font-size: 0.875rem;">
                         🌲Регион
                         </div>
                         <div style="word-break: break-word;">{base_ip["Region"]}</div>
-                        
+
                         <div style="color: var(--text-secondary); font-size: 0.875rem;">
                         🏘Город
                         </div>
                         <div style="word-break: break-word;">{base_ip["City"]}</div>
-                        
+
                         <div style="color: var(--text-secondary); font-size: 0.875rem;">
                         👤Провайдер
                         </div>
                         <div style="word-break: break-word;">{base_ip["Org"]}</div>
-                        
+
                         </div>
                 </div>
             </div>
@@ -454,7 +462,7 @@ def report(phone, ip, site):
             """
         except:
             pass
-    
+
     if site:
         try:
             html += f"""
@@ -469,7 +477,7 @@ def report(phone, ip, site):
                         🌐IP
                         </div>
                         <div style="word-break: break-word;">{base_site["IP"]}</div>
-                        
+
                         </div>
                 </div>
             </div>
@@ -477,7 +485,7 @@ def report(phone, ip, site):
             """
         except:
             pass
-        
+
     html += """
         <button class="scroll-top" aria-label="Прокрутить вверх">
             <svg style="width:24px;height:24px;"><use href="#arrow-up"/></svg>
@@ -485,7 +493,7 @@ def report(phone, ip, site):
         <script>
             // Скрипт для кнопки прокрутки
             const scrollBtn = document.querySelector('.scroll-top');
-            
+
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 500) {
                     scrollBtn.classList.add('visible');
@@ -516,13 +524,13 @@ def report(phone, ip, site):
 
                     try {
                         await navigator.clipboard.writeText(content);
-                        
+
                         const originalHTML = btn.innerHTML;
                         btn.innerHTML = `
                             <svg class="copy-icon"><use href="#copy-icon"/></svg>
                             Скопировано!
                         `;
-                        
+
                         setTimeout(() => {
                             btn.innerHTML = originalHTML;
                         }, 2000);
@@ -542,46 +550,46 @@ def report(phone, ip, site):
     </body>
     </html>
     """
-    with open('report.html', 'w') as file:
+    with open('report.html', 'w', encoding='utf-8') as file:
         file.write(html)
-    
+
     webbrowser.open('report.html')
-    
+
 def main():
     while True:
         Fore.RESET
-        
+
         print(purple + banner)
         print(Style.DIM + Fore.WHITE + funcbanner)
         print()
         select = input(Style.DIM + Fore.WHITE + "[ENTER THE FUNCTION NUMBER]: ")
-        
+
         if select == "1":
             phone = input(Style.DIM + Fore.WHITE + "[ENTER THE PHONE]: ")
             search_phone(phone)
-        
+
         if select == "2":
             ip = input(Style.DIM + Fore.WHITE + "[ENTER THE IP]: ")
             search_ip(ip)
-            
+
         if select == "3":
             domen = input(Style.DIM + Fore.WHITE + "[ENTER THE DOMEN]: ")
             get_ip(domen)
-            
+
         if select == "4":
             phone = input(Style.DIM + Fore.WHITE + "[ENTER THE PHONE]: ")
             spam_tg(phone)
-        
+
         if select == "0":
             break
-        
+
         if select == "-report":
             phone = input(Style.DIM + Fore.WHITE + "[ENTER THE PHONE?]: ")
             ip = input(Style.DIM + Fore.WHITE + "[ENTER THE IP?]: ")
             domen = input(Style.DIM + Fore.WHITE + "[ENTER THE DOMEN?]: ")
-            
+
             report(bool(phone), bool(ip), bool(domen))
-            
+
 
 os.system("clear")
 main()
