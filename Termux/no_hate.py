@@ -588,7 +588,22 @@ def main():
             ip = input(Style.DIM + Fore.WHITE + "[ENTER THE IP?]: ")
             domen = input(Style.DIM + Fore.WHITE + "[ENTER THE DOMEN?]: ")
 
-            report(bool(phone), bool(ip), bool(domen))
+            if phone == "1":
+                rep_phone = True
+            else:
+                rep_phone = False
+
+            if ip == "1":
+                rep_ip = True
+            else:
+                rep_ip = False
+
+            if domen == "1":
+                rep_domen = True
+            else:
+                rep_domen = False
+
+            report(rep_phone, rep_ip, rep_domen)
 
 
 os.system("clear")
