@@ -13,6 +13,8 @@ import time
 import json
 import os
 
+block[2]
+
 purple = Style.DIM + Fore.MAGENTA
 
 user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
