@@ -1,14 +1,10 @@
-import customtkinter
 from bs4 import BeautifulSoup
 from socket import gethostbyname
 from colorama import Fore, Style
 import fake_useragent
-import webbrowser
-import threading
 import requests
 import random
 import string
-import random
 import time
 import json
 import os
