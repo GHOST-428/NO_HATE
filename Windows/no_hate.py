@@ -3,15 +3,12 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 from bs4 import BeautifulSoup
 from socket import gethostbyname
-import fake_useragent
+from colorama import Fore, Style
+import phonenumbers
 import webbrowser
-import threading
 import requests
-import mutagen
 import random
 import string
-import random
-import base64
 import time
 import json
 import os
@@ -23,127 +20,14 @@ headers = {
     'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'Connection': 'keep-alive',
-    'Cookie': '__ddg1=KH749fj0Mh86fjwF; __ddg2=KH749fj0Mh86fjwF; _ym_uid=16463246825906840; _ym_d=1646324682; _ym_isad=1; _ym_visorc=w; _ga=GA1.2.1812100311.1646324683; _gid=GA1.2.1114254218.1646324683; _gat=1; _ym_isad=1; PHPSESSID=2159a9a41c763853f27c336f9b0951b1; _ym_visorc_42790243=w; _ym_visorc_18369385=w; _ym_visorc_16615425=w; _ym_visorc_42531933=w',
+    'Cookie': '_ym_uid=1743693800673093604; _ym_d=1743693800; advcake_session_id=94e12719-1af4-2c9c-ec57-837430f33c79; u=f344a4b2-cabb-4bdb-9d4a-d7765580b7e8; UniqAnalyticsId=1743693800463252; _ga=GA1.1.1065975030.1743693814; _ym_isad=1; deduplication_cookie=admitad; tt_deduplication_cookie=adm; advcake_utm_partner=58; advcake_utm_webmaster=; advcake_click_id=; f=5.0c4f4b6d233fb90636b4dd61b04726f14f0aa6d4f7157ca44f0aa6d4f7157ca44f0aa6d4f7157ca44f0aa6d4f7157ca42668c76b1faaa3582668c76b1faaa3582668c76b1faaa3584f0aa6d4f7157ca402b7af2c19f2d05c02b7af2c19f2d05c0df103df0c26013a7b0d53c7afc06d0b2ebf3cb6fd35a0ac0df103df0c26013a8b1472fe2f9ba6b984dcacfe8ebe897bfa4d7ea84258c63d59c9621b2c0fa58f915ac1de0d034112f12b79bbb67ac37d46b8ae4e81acb9fae2415097439d40473de19da9ed218fe287829363e2d856a2e992ad2cc54b8aa8d99271d186dc1cd03de19da9ed218fe2d50b96489ab264ed3de19da9ed218fe23de19da9ed218fe246b8ae4e81acb9fa38e6a683f47425a8352c31daf983fa077a7b6c33f74d335c03d3f0af72d633b5fc94383d5daf636102c730c0109b9fbbe1ec3d9ea7bc811829513d3346850e0b0e28148569569b796adb37bd300d2382bf723510b84fca532ebf3cb6fd35a0ac0df103df0c26013a28a353c4323c7a3aefcfb0a8b111019595b8b4036410f6893de19da9ed218fe23de19da9ed218fe2b4af293ec419f67f6cd48844eb16d6d58edd6a0f40cbfd87da3d420d6cca468c; ft="XMmZx0+cwimnNj2U4HXGJ2eIroRBcQ0I8gOd2fiUu0Vh5HMHN4XT5xkQP3nqXNJ1WIZoveMHbzRQU9NkuXk9HTwgyxIL7hpN3UieDU4WAtSuTi/biPjn419gXzEia2U7uFB5GQ7mM7vC86gaHgHNQDMkJkiiQIGboPCc2pqS0DOXiTCdaxJaZ0/ub4CuQ640"; tagTagUid=768bce3ad74c91717f190fbe62c1b1c8; tagtag_aid=768bce3ad74c91717f190fbe62c1b1c8; advcake_track_id=122e5a93-265a-8d1e-894c-69fcae2a815d; auth_access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJTZXNzaW9uSWQiOjM1MTg4NTcxOCwiVXNlcklkIjpudWxsLCJBdXRoZW50aWNhdGVkIjpmYWxzZSwiRGV2aWNlSWQiOm51bGwsImlzcyI6ImF1dG90ZWthLXBhc3Nwb3J0IiwiZXhwIjoxNzQ0MDQxMzM5LCJpYXQiOjE3NDQwMzk1Mzl9.of-DkGKselYKKKF8L9VFpvcscCzGi0PU1gvZ4uYrUwFk6dWSRucqMzi35tEx1mMEwu_7huhnVIL9mHE_naL25s02jMiwj-fUR9vSEwqlGF14cIDmqQW5k9YpRPJiAd0opsD2zSHrTkHKk6sbiUNFg4N2fbr88QkoOvki8ieJ1pRnZTyEEedR0q_2e7vf7TX-7hSCbZnJmNtFsKtJVq_Ht8VLAxElrr1pQlgELW3B4_Cot1C-IA7-2a2HjAU4H9sXIXSrqvGqWiuDkUpczO1vQ9eujZ9cRD_roC3jO2dnIm3m8EF9b6Slikp9-gOFHVGtwmjszPkRViKQlh-MgnTVFw; advcake_track_url=%3D20250113Zh2VHGPgAgJGds1kPdMToTsQ72oA%2Fqon5jbFjwPVN%2BGI4DK9aXwzSprXVMFpP9iX5dYLc9IyOie8X2ddEL%2FAy2vXsbGxHgqlnI6Ee3glJ8kbswHHk2U9JUd6qvrtlFa4I3Fss5Bh1N3f%2FE4YWswTJS%2FkEonHwHU5nIMA8s5abVYIAO1asNoJdpoeC8szn4w59gFdGaHN5dbeVrzU%2FsbOG9Egk6LIp3u51aotEFgvQ9KAABWd1xmOQbqmrJriPjkRMM0a93OoHB4DIgg97NVsAxqimFWxB21wewdVJ7uuR5Y0Wdnr%2FoTAKn5SkhujQYgt13f%2FAa8qQqd5qH2MIuiKj8VNoP0%2FZw0HYQPaR4xfwQM383BOtmtQYPgYzz6QbMscspSo502toZqRMrRw7kVaMZucXzR%2FODFRYgDVzm81XFjmebDhc92lhDuXMMAQ%2BR9SEApRLhUIZtOT9xK%2BGZSdBmYqV64iLuk7%2B%2B%2BGcGQQbih7bSnDMdRgOr3sJgGDhY%2FXSNN5NjZbGTwnc%2FzZaCl5xpqk18138xTU36CTpOy22el97G6IGWrmulNxkElagc1hTcfYPTf%2B5tuCvPKrqmdZeq66w2tucR4m6K1Mdydu2NLtStLV9z7NepEiZKhIRJmRCkGljhKDdT3SBrABc2PVnkz8I1iQ6EGqYtR4OGBBjsyvNpBziuDW9xY%3D; _ga_R1J00DTZKD=GS1.1.1744039547.5.1.1744039560.0.0.0',
     'Upgrade-Insecure-Requests': '1'
 }
+
 base_phone = {}
 base_ip = {}
 base_site = {}
-base_auto = {}
 base_photo = {}
-
-def generate_phone_number():
-    # Updated phone number generation logic
-    template = "+7**********"
-    return ''.join(random.choice('0123456789') if char == '*' else char for char in template)
-
-def generate_email():
-    domains = ["gmail.com", "rambler.ru", "yahoo.com", "mail.ru"]
-    username = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=10))
-    domain = random.choice(domains)
-    return f"{username}@{domain}"
-
-def generate_complaint(username, violation):
-    return random.choice(violations[violation][1]).format(username=username)
-
-violations = {
-    1: ['Спам', [
-        'Уважаемая служба поддержки, пользователь {username} активно занимается спамом. Примите меры.',
-        'Пользователь {username} нарушает правила, рассылка спама. Прошу принять меры.',
-        'Аккаунт {username} занимается спамом в чатах Telegram. Просьба принять меры.',
-        'Пользователь {username} отправляет спам-сообщения в чатах. Пожалуйста, разберитесь.',
-        'Заметил, что {username} занимается рассылкой спама. Прошу принять меры.',
-        'Пользователь {username} спамит в чатах Telegram. Требуются меры.'
-    ]],
-    2: ['Мошенничество', [
-        'Обратите внимание на {username}, подозревается в мошенничестве. Проверьте его действия.',
-        'Пользователь {username} участвует в мошеннических схемах. Просьба принять меры.',
-        'Уважаемая служба поддержки, {username} занимается мошенничеством. Требуются меры.',
-        'Пользователь {username} замечен в мошенничестве. Прошу проверить.',
-        'Прошу обратить внимание на {username}, возможное мошенничество. Необходимо вмешательство.',
-        'Пользователь {username} подозревается в мошеннических действиях. Проверьте.'
-    ]],
-    3: ['Порнография', [
-        'Уважаемая служба поддержки, {username} распространяет порнографию. Примите меры.',
-        'Пользователь {username} нарушает правила, распространение порнографии. Прошу принять меры.',
-        'Аккаунт {username} распространяет порнографический контент. Просьба принять меры.',
-        'Пользователь {username} размещает порнографические материалы. Пожалуйста, разберитесь.',
-        'Заметил, что {username} распространяет порнографию. Прошу принять меры.',
-        'Пользователь {username} распространяет порнографию в чатах Telegram. Требуются меры.'
-    ]],
-    4: ['Нарушение правил', [
-        'Уважаемая служба поддержки, {username} нарушает правила платформы. Примите меры.',
-        'Пользователь {username} систематически нарушает правила. Прошу принять меры.',
-        'Аккаунт {username} нарушает установленные правила. Просьба принять меры.',
-        'Пользователь {username} нарушает правила поведения. Пожалуйста, разберитесь.',
-        'Заметил, что {username} нарушает правила. Прошу принять меры.',
-        'Пользователь {username} нарушает правила Telegram. Требуются меры.'
-    ]],
-    5: ['Оскорбления', [
-        'Уважаемая служба поддержки, {username} оскорбляет пользователей. Примите меры.',
-        'Пользователь {username} ведет себя агрессивно и оскорбляет других. Прошу принять меры.',
-        'Аккаунт {username} оскорбляет участников чатов. Просьба принять меры.',
-        'Пользователь {username} распространяет оскорбительные сообщения. Пожалуйста, разберитесь.',
-        'Заметил, что {username} оскорбляет других участников. Прошу принять меры.',
-        'Пользователь {username} ведет себя оскорбительно в чатах Telegram. Требуются меры.'
-    ]],
-    6: ['Нарушение авторских прав', [
-        'Уважаемая служба поддержки, {username} нарушает авторские права. Примите меры.',
-        'Пользователь {username} размещает контент без разрешения. Прошу принять меры.',
-        'Аккаунт {username} систематически нарушает авторские права. Просьба принять меры.',
-        'Пользователь {username} размещает защищенные материалы. Пожалуйста, разберитесь.',
-        'Заметил, что {username} нарушает авторские права. Прошу принять меры.',
-        'Пользователь {username} нарушает авторские права в чатах Telegram. Требуются меры.'
-    ]],
-    7: ['Пропаганда насилия', [
-        'Уважаемая служба поддержки, {username} распространяет материалы с насилием. Примите меры.',
-        'Пользователь {username} пропагандирует насилие. Прошу принять меры.',
-        'Аккаунт {username} размещает материалы с насилием. Просьба принять меры.',
-        'Пользователь {username} пропагандирует насилие. Пожалуйста, разберитесь.',
-        'Заметил, что {username} распространяет насильственные материалы. Прошу принять меры.',
-        'Пользователь {username} пропагандирует насилие в чатах Telegram. Требуются меры.'
-    ]],
-    8: ['Пропаганда наркотиков', [
-        'Уважаемая служба поддержки, {username} пропагандирует наркотики. Примите меры.',
-        'Пользователь {username} распространяет материалы про наркотики. Прошу принять меры.',
-        'Аккаунт {username} занимается пропагандой наркотиков. Просьба принять меры.',
-        'Пользователь {username} пропагандирует наркотики. Пожалуйста, разберитесь.',
-        'Заметил, что {username} распространяет материалы про наркотики. Прошу принять меры.',
-        'Пользователь {username} пропагандирует наркотики в чатах Telegram. Требуются меры.'
-    ]],
-    9: ['Терроризм', [
-        'Уважаемая служба поддержки, {username} связан с терроризмом. Примите меры.',
-        'Пользователь {username} подозревается в терроризме. Прошу принять меры.',
-        'Аккаунт {username} связан с террористическими действиями. Просьба принять меры.',
-        'Пользователь {username} распространяет террористические материалы. Пожалуйста, разберитесь.',
-        'Заметил, что {username} может быть причастен к терроризму. Прошу принять меры.',
-        'Пользователь {username} подозревается в террористической деятельности. Требуются меры.'
-    ]],
-    10: ['Фейковые новости', [
-        'Уважаемая служба поддержки, {username} распространяет фейковые новости. Примите меры.',
-        'Пользователь {username} занимается дезинформацией. Прошу принять меры.',
-        'Аккаунт {username} распространяет ложные сведения. Просьба принять меры.',
-        'Пользователь {username} распространяет фейки. Пожалуйста, разберитесь.',
-        'Заметил, что {username} распространяет фейковые новости. Прошу принять меры.',
-        'Пользователь {username} занимается дезинформацией в чатах Telegram. Требуются меры.'
-    ]],
-    11: ['Нарушение конфиденциальности', [
-        'Уважаемая служба поддержки, {username} нарушает конфиденциальность. Примите меры.',
-        'Пользователь {username} распространяет личные данные. Прошу принять меры.',
-        'Аккаунт {username} нарушает правила конфиденциальности. Просьба принять меры.',
-        'Пользователь {username} нарушает конфиденциальность. Пожалуйста, разберитесь.',
-        'Заметил, что {username} нарушает конфиденциальность. Прошу принять меры.',
-        'Пользователь {username} распространяет личные данные в чатах Telegram. Требуются меры.'
-    ]],
-    12: ['Хакерство', [
-        'Уважаемая служба поддержки, {username} занимается хакерством. Примите меры.',
-        'Пользователь {username} подозревается в хакерстве. Прошу принять меры.',
-        'Аккаунт {username} занимается хакерской деятельностью. Просьба принять меры.',
-        'Пользователь {username} подозревается в хакерской деятельности. Пожалуйста, разберитесь.',
-        'Заметил, что {username} занимается хакерством. Прошу принять меры.',
-        'Пользователь {username} занимается хакерством в чатах Telegram. Требуются меры.'
-    ]]
-}
 
 #function's
 def search_phone(phone: str):
@@ -158,11 +42,20 @@ def search_phone(phone: str):
     if mnp_rep.text != "﻿no":
         oper = oper + " был перенесён на " + mnp_rep.text
 
+    parsed_number = phonenumbers.parse(phone)
+
+    if phonenumbers.number_type(parsed_number) == 1:
+        Type = "Мобильный"
+    else:
+        Type = "Стационарный"
+
     base = {
         "Query": phone,
         "Country": data["country"] if data["country"] != "" else "Не найдено",
         "Region": data["region"] if data["region"] != "" else "Не найдено",
-        "Oper": oper
+        "City": data["subRegion"] if data["subRegion"] != "" else "Не найдено",
+        "Oper": oper,
+        "Type": Type
     }
 
     global base_phone
@@ -193,7 +86,7 @@ def info_site(domen: str):
 
     base = {
         "Query": domen,
-        "IP": ip
+        "IP": ip,
     }
 
     global base_site
@@ -256,10 +149,7 @@ def spam_tg(phone: str):
 
     while True:
         for url in urls:
-            user = fake_useragent.UserAgent().random
-            headers = {'user-agent': user}
-
-            requests.post(url, headers=headers, data={'phone': phone})
+            requests.post(url, headers={'User-Agent': user_agent}, data={'phone': phone})
             time.sleep(0.5)
 
 def stealler_build(token: str):
@@ -308,23 +198,6 @@ def stealler_build(token: str):
     with open('stealer.py', 'w') as file:
         file.write(code)
 
-def snos_tg(nickname: str):
-    user = fake_useragent.UserAgent().random
-    url = "https://telegram.org/support"
-    headers = {'content-type': 'application/json', 'User-Agent': user}
-    phone = generate_phone_number()
-    email = generate_email()
-    complaint = generate_complaint(nickname, 1)
-
-    data = {
-        'complaint': complaint,
-        'support_problem': complaint,
-        'support_phone': phone,
-        'support_email': email
-    }
-
-    response = requests.post(url, headers=headers, json=data)
-
 #Menu
 def phone():
     phone = customtkinter.CTk()
@@ -347,14 +220,22 @@ def phone():
     def one():
         textbox.delete(0.0, 'end')
         info = search_phone(entry.get())
-        textbox.insert(f"0.0", f'Страна: {info["Country"]} \nРегион: {info["Region"]} \nОператор: {info["Oper"]}')
+        out = f"""
+                    [INF] Геолакацация
+                      ┠ Страна: {info["Country"]}
+                      ┠ Регион: {info["Region"]}
+                      ┗ Город: {info["City"]}
+
+                    [INF] Обслуживание
+                      ┠ Оператор: {info["Oper"]}
+                      ┗ Тип номера: {info["Type"]}
+        """
+        textbox.insert(f"0.0", out)
 
     button = customtkinter.CTkButton(master=phone, text="Search", command=one)
     button.place(x=170, y=260, anchor=customtkinter.CENTER)
 
     phone.mainloop()
-
-
 
 def ip():
     ip = customtkinter.CTk()
@@ -377,7 +258,16 @@ def ip():
     def one():
         textbox.delete(0.0, 'end')
         info = search_ip(entry.get())
-        textbox.insert(f"0.0", f'Страна: {info["Country"]} \nРегион: {info["Region"]} \nГород: {info["City"]} \nПровайдер: {info["Org"]}')
+        out = f"""
+                    [INF] Геолакацация
+                      ┠ Страна: {info["Country"]}
+                      ┠ Регион: {info["Region"]}
+                      ┗ Город: {info["City"]}
+
+                    [INF] Провайдер
+                      ┗ Провайдер: {info["Org"]}
+        """
+        textbox.insert(f"0.0", out)
 
     button = customtkinter.CTkButton(master=ip, text="Search", command=one)
     button.place(x=170, y=260, anchor=customtkinter.CENTER)
@@ -433,7 +323,14 @@ def photo():
     def one():
         textbox.delete(0.0, 'end')
         info = info_photo(entry.get())
-        textbox.insert(f"0.0", f'Устройство: {info["Device"]} \nДата и время: {info["Date-Time"]}')
+        out = f"""
+                    [INF] Устройство
+                      ┗Страна: {info["Device"]}
+
+                    [INF] Времемя
+                      ┗ Дата и время: {info["Date-Time"]}
+        """
+        textbox.insert(f"0.0", out)
 
     button = customtkinter.CTkButton(master=photo, text="Get MetaData", command=one)
     button.place(x=170, y=260, anchor=customtkinter.CENTER)
@@ -696,6 +593,7 @@ def report():
             <div class="data-grid">
         <div class="data-item">
                 <div style="margin-bottom: 0.5rem;">
+                    <h2 style="margin-top: 0px;">Геолокация</h2>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">
                     🌏Страна
                     </div>
@@ -707,9 +605,20 @@ def report():
                     <div style="word-break: break-word;">{base_phone["Region"]}</div>
 
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                    🏘Город
+                    </div>
+                    <div style="word-break: break-word;">{base_phone["City"]}</div>
+
+                    <h2 style="margin-top: 2rem;">Обслуживание</h2>
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">
                     👤Оператор
                     </div>
                     <div style="word-break: break-word;">{base_phone["Oper"]}</div>
+
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                    🔗Тип
+                    </div>
+                    <div style="word-break: break-word;">Мобильный</div>
                 </div>
             </div>
         </div>
@@ -726,6 +635,7 @@ def report():
             <div class="data-grid">
         <div class="data-item">
                 <div style="margin-bottom: 0.5rem;">
+                    <h2 style="margin-top: 0px;">Геолокация</h2>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">
                     🌏Страна
                     </div>
@@ -741,11 +651,11 @@ def report():
                     </div>
                     <div style="word-break: break-word;">{base_ip["City"]}</div>
 
+                    <h2 style="margin-top: 2rem;">Обслуживание</h2>
                     <div style="color: var(--text-secondary); font-size: 0.875rem;">
                     👤Провайдер
                     </div>
                     <div style="word-break: break-word;">{base_ip["Org"]}</div>
-                    </div>
                 </div>
             </div>
         </div></div>
