@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from socket import gethostbyname
 from colorama import Fore, Style
-import fake_useragent
+import phonenumbers
 import requests
 import random
 import string
@@ -10,6 +10,9 @@ import json
 import os
 
 purple = Style.DIM + Fore.MAGENTA
+purple = Style.BRIGHT + Fore.MAGENTA
+red = Style.BRIGHT + Fore.RED
+red = Style.DIM + Fore.RED
 
 user_agent = f"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 base_phone = {}
@@ -66,18 +69,22 @@ banner = f"""⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
               ░     ░ ░      ░  ░  ░      ░  ░           ░  ░
 """
 
-funcbanner = """
+funcbanner = f"""
               ╔════════════════════════════════════╗
-              ║               ФУНКЦИИ              ║
+              ║        {Fore.RESET}{red}Made by HikuraMukuyami{Fore.RESET}{Style.DIM + Fore.WHITE}      ║
               ╠════════════════════════════════════╣
+              ╠══════════════  OSINT  ═════════════╣
+              ║                                    ║
               ║         Пробив по номеру: 1        ║
               ║           Пробив по IP: 2          ║
               ║       Пробив по гос. номеру: 3     ║
-              ║        Узнать ip по домену: 4      ║
-              ║        Спамер для telegram: 5      ║
+              ║                                    ║
+              ╠══════════════  TOOLS  ═════════════╣
+              ║                                    ║
+              ║        Спамер для telegram: 4      ║
+              ║                                    ║
               ╠════════════════════════════════════╣
               ║              Выход: 0              ║
-              ║           Отчёт: -report           ║
               ╚════════════════════════════════════╝
 """
 
@@ -92,17 +99,35 @@ def search_phone(phone: str):
     if mnp_rep.text != "﻿no":
         oper = oper + " был перенесён на " + mnp_rep.text
 
+    parsed_number = phonenumbers.parse(phone)
+
+    if phonenumbers.number_type(parsed_number) == 1:
+        Type = "Мобильный"
+    else:
+        Type = "Стационарный"
+
     base = {
         "Query": phone,
         "Country": data["country"] if data["country"] != "" else "Не найдено",
         "Region": data["region"] if data["region"] != "" else "Не найдено",
-        "Oper": oper
+        "City": data["subRegion"] if data["subRegion"] != "" else "Не найдено",
+        "Oper": oper,
+        "Type": Type
     }
 
-    print(Fore.YELLOW + "\nPhone Info📞")
-    printDelay(Fore.YELLOW, f"Страна: " + base["Country"])
-    printDelay(Fore.YELLOW,  f"Регион: " + base["Region"])
-    printDelay(Fore.YELLOW,  f"Оператор: " + base["Oper"])
+    result = f"""
+           Phone Info📞
+
+    [INF] Геолакацация
+      ┠ Страна: {base["Country"]}
+      ┠ Регион: {base["Region"]}
+      ┗ Город: {base["City"]}
+
+    [INF] Оператор
+      ┠ Оператор: {base["Oper"]}
+      ┗ Тип номера: {base["Type"]}
+    """
+    print(red, result)
 
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
@@ -121,11 +146,18 @@ def search_ip(ip: str):
         "Org": data.get('org', "Не найдено"),
     }
 
-    print(Fore.YELLOW + "\nIP Info🌐")
-    printDelay(Fore.YELLOW, f"Страна: " + base["Country"])
-    printDelay(Fore.YELLOW, f"Регион: " + base["Region"])
-    printDelay(Fore.YELLOW, f"Город: " + base["City"])
-    printDelay(Fore.YELLOW, f"Провайдер: " + base["Org"])
+    result = f"""
+            IP Info🌐
+    [INF] Геолакацация
+      ┠ Страна: {base["Country"]}
+      ┠ Регион: {base["Region"]}
+      ┗ Город: {base["City"]}
+
+    [INF] Провайдер
+      ┗ Провайдер: {base["Org"]}
+    """
+
+    print(red + result)
 
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
@@ -136,11 +168,20 @@ def search_car(gosnomer: str):
     response = requests.post(url, json={"car_identifier": gosnomer, "type": "number_plate"}, headers={'User-Agent': user_agent})
     data = json.loads(response.text)
 
-    print(Fore.YELLOW + "\nCar Info🚗")
-    printDelay(Fore.YELLOW, f"Марка/Модель: {data['report']['car_mark']} {data['report']['car_model']}")
-    printDelay(Fore.YELLOW, f"Лошадиные силы: {data['report']['engine_power']}")
-    printDelay(Fore.YELLOW, f"Год выпуска: {data['report']['manufacturing_year']}")
-    printDelay(Fore.YELLOW, f"VIN: {data['report']['vin_number']}")
+    result = f"""
+                 Car Info🚗
+    [INF] Параметры
+      ┠ Марка/Модель: {data['report']['car_mark']} {data['report']['car_model']}
+      ┗ Лошадиные силы: {data['report']['engine_power']}
+
+    [INF] Модель
+      ┗ Год выпуска: {data['report']['manufacturing_year']}
+
+    [INF] Кондифициальное
+      ┗ VIN: {data['report']['vin_number']}
+    """
+
+    print(red + result)
 
     print("")
     input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
@@ -166,43 +207,26 @@ def spam_tg(phone: str):
 
     while True:
         for url in urls:
-            user = fake_useragent.UserAgent().random
-            headers = {'user-agent': user}
-
             try:
-                requests.post(url, headers=headers, data={'phone': phone})
+                requests.post(url, headers={'User-Agent': user_agent}, data={'phone': phone})
                 print(Style.DIM + Fore.WHITE, f"[+]: Sended to {phone}, succesfull")
             except:
                 print(Style.DIM + Fore.RED, f"[-]: Not sended to {phone}, error")
-            time.sleep(2)
-
-def get_ip(domen: str):
-    ip = gethostbyname(domen.split('/')[2]) if '/' in domen else gethostbyname(domen)
-
-    base = {
-        "Query": domen,
-        "IP": ip
-    }
-
-    print(Fore.YELLOW + "\nDomen Info📰")
-    printDelay(Fore.YELLOW, f"IP: {ip}")
-
-    print("")
-    input(Style.DIM + Fore.WHITE + "[PRESS ENTER TO CONTINIE...]")
-    os.system("clear")
+            time.sleep(1)
 
 def main():
     while True:
         Fore.RESET
 
-        print(Fore.RED + banner_dox)
-        time.sleep(6)
+        print(red + banner_dox)
+        time.sleep(3)
         os.system("clear")
         print(purple + banner)
         print(Style.DIM + Fore.WHITE + funcbanner)
         print()
         select = input(Style.DIM + Fore.WHITE + "[ENTER THE FUNCTION NUMBER]: ")
 
+        #Osint
         if select == "1":
             phone = input(Style.DIM + Fore.WHITE + "[ENTER THE PHONE]: ")
             search_phone(phone)
@@ -215,11 +239,8 @@ def main():
             gosnomer = input(Style.DIM + Fore.WHITE + "[ENTER THE GOS. NUMBER]: ")
             search_car(gosnomer)
 
+        #tools
         if select == "4":
-            domen = input(Style.DIM + Fore.WHITE + "[ENTER THE DOMEN]: ")
-            get_ip(domen)
-
-        if select == "5":
             phone = input(Style.DIM + Fore.WHITE + "[ENTER THE PHONE]: ")
             spam_tg(phone)
 
