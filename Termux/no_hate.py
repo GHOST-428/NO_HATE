@@ -138,23 +138,27 @@ def search_ip(ip: str):
     response = requests.get(url, headers={'User-Agent': user_agent})
     data = response.json()
 
-    base = {
-        "Query": ip,
-        "Country": data.get('country', "Не найдено"),
-        "Region": data.get('region', "Не найдено"),
-        "City": data.get('city', "Не найдено"),
-        "Org": data.get('org', "Не найдено"),
-    }
+    Country = data.get('country', "Не найдено")
+    Region = data.get('region', "Не найдено")
+    City = data.get('city', "Не найдено")
+    Org = data.get('org', "Не найдено")
+    Host = data.get('hostname', "Не найдено")
+    TimeZ = data.get('timezone', "Не найдено")
 
     result = f"""
             IP Info🌐
     [INF] Геолокация
-      ┠ Страна: {base["Country"]}
-      ┠ Регион: {base["Region"]}
-      ┗ Город: {base["City"]}
+      ┠ Страна: {Country}
+      ┠ Регион: {Region}
+      ┗ Город: {City}
 
-    [INF] Провайдер
-      ┗ Провайдер: {base["Org"]}
+    [INF] Обслуживание
+      ┠ Хост: {Host}
+      ┗ Провайдер: {Org}
+
+    [INF] Время
+      ┗ Временная зона: {TimeZ}
+
     """
 
     print(red + result)
